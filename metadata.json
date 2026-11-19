@@ -1,0 +1,8 @@
+{
+  "name": "SmartBiz AI – Business Intelligence Dashboard",
+  "description": "Self-contained interactive business intelligence dashboard with live KPIs, sales & product analytics, local AI insights & Q&A, and CSV import/export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

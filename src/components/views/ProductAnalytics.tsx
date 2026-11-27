@@ -1,17 +1,18 @@
 import { useMemo, useState } from 'react';
 import type { ChartConfiguration } from 'chart.js';
 import { ArrowUpDown } from 'lucide-react';
-import type { AnalyticsSummary, ProductMetric } from '../../types/bi';
-import { fmtCurrency, fmtNumber } from '../../utils/analytics';
+import type { AnalyticsSummary, CurrencyCode, ProductMetric } from '../../types/bi';
+import { fmtCurrency, fmtNumber, fmtShortAxisCurrency } from '../../utils/analytics';
 import { ChartCanvas } from '../ChartCanvas';
 
 interface ProductAnalyticsProps {
+  currency: CurrencyCode;
   stats: AnalyticsSummary;
 }
 
 type SortKey = 'name' | 'orders' | 'units' | 'revenue' | 'cost' | 'profit' | 'margin';
 
-export function ProductAnalytics({ stats }: ProductAnalyticsProps) {
+export function ProductAnalytics({ currency, stats }: ProductAnalyticsProps) {
   const [sortKey, setSortKey] = useState<SortKey>('revenue');
   const [sortAsc, setSortAsc] = useState(false);
 
@@ -66,7 +67,7 @@ export function ProductAnalytics({ stats }: ProductAnalyticsProps) {
             padding: 11,
             cornerRadius: 8,
             callbacks: {
-              label: (ctx) => `Revenue: ${fmtCurrency(Number(ctx.parsed.x ?? 0))}`,
+              label: (ctx) => `Revenue: ${fmtCurrency(Number(ctx.parsed.x ?? 0), currency)}`,
             },
           },
         },
@@ -76,17 +77,14 @@ export function ProductAnalytics({ stats }: ProductAnalyticsProps) {
             ticks: {
               font: { family: 'JetBrains Mono', size: 11 },
               color: '#64748B',
-              callback: (v) => {
-                const n = Number(v);
-                return '$' + (n >= 1000 ? (n / 1000).toFixed(0) + 'k' : n);
-              },
+              callback: (v) => fmtShortAxisCurrency(Number(v), currency),
             },
           },
           y: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 11 }, color: '#334155' } },
         },
       },
     }),
-    [stats.products]
+    [stats.products, currency]
   );
 
   const productProfitConfig = useMemo<ChartConfiguration>(() => {
@@ -97,7 +95,7 @@ export function ProductAnalytics({ stats }: ProductAnalyticsProps) {
         labels: profSorted.map((p) => p.name),
         datasets: [
           {
-            label: 'Profit',
+            label: 'Gross Profit',
             data: profSorted.map((p) => p.profit),
             backgroundColor: profSorted.map((p) => (p.profit >= 0 ? '#0F172A' : '#DC2626')),
             borderRadius: 5,
@@ -115,7 +113,7 @@ export function ProductAnalytics({ stats }: ProductAnalyticsProps) {
             padding: 11,
             cornerRadius: 8,
             callbacks: {
-              label: (ctx) => `Profit: ${fmtCurrency(Number(ctx.parsed.x ?? 0))}`,
+              label: (ctx) => `Profit: ${fmtCurrency(Number(ctx.parsed.x ?? 0), currency)}`,
             },
           },
         },
@@ -125,17 +123,14 @@ export function ProductAnalytics({ stats }: ProductAnalyticsProps) {
             ticks: {
               font: { family: 'JetBrains Mono', size: 11 },
               color: '#64748B',
-              callback: (v) => {
-                const n = Number(v);
-                return '$' + (n >= 1000 ? (n / 1000).toFixed(0) + 'k' : n);
-              },
+              callback: (v) => fmtShortAxisCurrency(Number(v), currency),
             },
           },
           y: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 11 }, color: '#334155' } },
         },
       },
     };
-  }, [stats.products]);
+  }, [stats.products, currency]);
 
   const renderRankList = (list: ProductMetric[], isLow: boolean) => {
     if (list.length === 0) {
@@ -155,13 +150,13 @@ export function ProductAnalytics({ stats }: ProductAnalyticsProps) {
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold text-slate-900 truncate">{p.name}</div>
               <div className="text-xs text-slate-500 mt-0.5">
-                {p.category} · {fmtNumber(p.units)} units · {p.margin.toFixed(1)}% margin
+                {p.category} · {fmtNumber(p.units, currency)} units · {p.margin.toFixed(1)}% margin
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="font-mono-num text-sm font-bold text-slate-900">{fmtCurrency(p.revenue)}</div>
+              <div className="font-mono-num text-sm font-bold text-slate-900">{fmtCurrency(p.revenue, currency)}</div>
               <div className="font-mono-num text-xs text-slate-500 mt-0.5">
-                Profit {fmtCurrency(p.profit)}
+                Profit {fmtCurrency(p.profit, currency)}
               </div>
             </div>
           </div>
@@ -211,8 +206,8 @@ export function ProductAnalytics({ stats }: ProductAnalyticsProps) {
 
         <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6">
           <div className="mb-5">
-            <h3 className="text-base font-bold text-slate-900">Product-Wise Profit</h3>
-            <p className="text-xs text-slate-500 mt-0.5">Net profit generated per SKU</p>
+            <h3 className="text-base font-bold text-slate-900">Product-Wise Gross Profit</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Gross profit generated per SKU</p>
           </div>
           <div className="relative h-[340px] w-full">
             <ChartCanvas config={productProfitConfig} ariaLabel="Product-wise profit horizontal bar chart" />
@@ -312,23 +307,23 @@ export function ProductAnalytics({ stats }: ProductAnalyticsProps) {
                     <td className="py-3 px-4 font-semibold text-slate-900 whitespace-nowrap">{p.name}</td>
                     <td className="py-3 px-4 text-slate-600 whitespace-nowrap">{p.category}</td>
                     <td className="py-3 px-4 text-right font-mono-num text-slate-700 whitespace-nowrap">
-                      {fmtNumber(p.orders)}
+                      {fmtNumber(p.orders, currency)}
                     </td>
                     <td className="py-3 px-4 text-right font-mono-num text-slate-700 whitespace-nowrap">
-                      {fmtNumber(p.units)}
+                      {fmtNumber(p.units, currency)}
                     </td>
                     <td className="py-3 px-4 text-right font-mono-num font-semibold text-slate-900 whitespace-nowrap">
-                      {fmtCurrency(p.revenue)}
+                      {fmtCurrency(p.revenue, currency)}
                     </td>
                     <td className="py-3 px-4 text-right font-mono-num text-slate-600 whitespace-nowrap">
-                      {fmtCurrency(p.cost)}
+                      {fmtCurrency(p.cost, currency)}
                     </td>
                     <td
                       className={`py-3 px-4 text-right font-mono-num font-semibold whitespace-nowrap ${
                         p.profit >= 0 ? 'text-emerald-700' : 'text-rose-700'
                       }`}
                     >
-                      {fmtCurrency(p.profit)}
+                      {fmtCurrency(p.profit, currency)}
                     </td>
                     <td className="py-3 px-4 text-right font-mono-num text-slate-700 whitespace-nowrap">
                       {p.margin.toFixed(1)}%

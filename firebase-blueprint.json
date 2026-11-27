@@ -1,0 +1,824 @@
+{
+  "entities": {
+    "ShopProfile": {
+      "title": "ShopProfile",
+      "description": "Private profile and settings for an individual authenticated shop owner.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Authenticated Firebase UID of the shop owner."
+        },
+        "businessId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique identifier for this business workspace under the owner account."
+        },
+        "shopName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Registered name of the shop or business."
+        },
+        "ownerName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Full name of the shop owner."
+        },
+        "ownerEmail": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160,
+          "description": "Verified email address of the shop owner."
+        },
+        "businessType": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "Legal or operating business type (e.g. Sole Proprietorship, Pvt Ltd, Independent / Freelance)."
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Retail",
+            "Clothing Store",
+            "Restaurant",
+            "E-commerce",
+            "Manufacturing",
+            "Wholesale",
+            "Education",
+            "Healthcare",
+            "Professional Services",
+            "Freelancer",
+            "Other"
+          ],
+          "description": "Standardized SaaS industry category."
+        },
+        "businessSize": {
+          "type": "string",
+          "enum": [
+            "Solo / Micro (1)",
+            "Small (2-20)",
+            "Medium (21-100)",
+            "Enterprise (100+)"
+          ],
+          "description": "Business team size tier."
+        },
+        "country": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60,
+          "description": "Country of operation."
+        },
+        "currency": {
+          "type": "string",
+          "enum": ["INR", "USD", "EUR", "JPY", "GBP", "AUD", "CAD", "SGD", "AED"],
+          "description": "Reporting currency code."
+        },
+        "address": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200,
+          "description": "Business street, shop, or office address."
+        },
+        "city": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "City and state where the shop operates."
+        },
+        "ownerPhone": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 20,
+          "description": "Primary contact phone number of the business owner."
+        },
+        "gstin": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 20,
+          "description": "Optional GSTIN registration number."
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 20,
+          "description": "Optional default WhatsApp number for daily business reports."
+        },
+        "logoUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 40000,
+          "description": "Compressed PNG/JPEG/WebP data URL for the business logo."
+        },
+        "dataSource": {
+          "type": "string",
+          "enum": ["demo", "live"],
+          "minLength": 4,
+          "maxLength": 10,
+          "description": "Tracks whether the shop workspace currently holds sample demo data or actual business data."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the shop was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the shop profile was last updated."
+        }
+      },
+      "required": [
+        "ownerId",
+        "shopName",
+        "ownerName",
+        "ownerEmail",
+        "businessType",
+        "city",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "BusinessConfig": {
+      "title": "BusinessConfig",
+      "description": "Separate business setup configuration storing industry category, size, goals, recommended modules, and active module toggles per business.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "businessId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Retail",
+            "Clothing Store",
+            "Restaurant",
+            "E-commerce",
+            "Manufacturing",
+            "Wholesale",
+            "Education",
+            "Healthcare",
+            "Professional Services",
+            "Freelancer",
+            "Other"
+          ]
+        },
+        "businessSize": {
+          "type": "string",
+          "enum": [
+            "Solo / Micro (1)",
+            "Small (2-20)",
+            "Medium (21-100)",
+            "Enterprise (100+)"
+          ]
+        },
+        "country": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "currency": {
+          "type": "string",
+          "enum": ["INR", "USD", "EUR", "JPY", "GBP", "AUD", "CAD", "SGD", "AED"]
+        },
+        "businessGoals": {
+          "type": "array",
+          "description": "Selected business growth and operational goals (max 10)."
+        },
+        "recommendedModules": {
+          "type": "array",
+          "description": "Automatically recommended module IDs for the chosen business category."
+        },
+        "enabledModules": {
+          "type": "array",
+          "description": "Currently enabled module IDs customized by the business owner."
+        },
+        "autoConfigured": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "businessId",
+        "category",
+        "businessSize",
+        "country",
+        "currency",
+        "businessGoals",
+        "recommendedModules",
+        "enabledModules",
+        "autoConfigured",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SaleEntry": {
+      "title": "SaleEntry",
+      "description": "Individual sales transaction belonging exclusively to one shop.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "Date": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "Product": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "Category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "Quantity": {
+          "type": "integer"
+        },
+        "Revenue": {
+          "type": "number"
+        },
+        "Cost": {
+          "type": "number"
+        },
+        "Profit": {
+          "type": "number"
+        },
+        "Region": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "PaymentMode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "customerId": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]*$"
+        },
+        "customerName": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "Date",
+        "Product",
+        "Category",
+        "Quantity",
+        "Revenue",
+        "Cost",
+        "Profit",
+        "Region",
+        "PaymentMode",
+        "createdAt"
+      ]
+    },
+    "ExpenseEntry": {
+      "title": "ExpenseEntry",
+      "description": "Operating expense record belonging exclusively to one shop.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "Date": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "Title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "Category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "Amount": {
+          "type": "number"
+        },
+        "PaymentMode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "Notes": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 240
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "Date",
+        "Title",
+        "Category",
+        "Amount",
+        "PaymentMode",
+        "createdAt"
+      ]
+    },
+    "InventorySku": {
+      "title": "InventorySku",
+      "description": "Tracked product SKU and stock threshold belonging exclusively to one shop.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "sku": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "stock": {
+          "type": "integer"
+        },
+        "reorderLevel": {
+          "type": "integer"
+        },
+        "unitPrice": {
+          "type": "number"
+        },
+        "unitCost": {
+          "type": "number"
+        },
+        "supplier": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "sku",
+        "name",
+        "category",
+        "stock",
+        "reorderLevel",
+        "unitPrice",
+        "unitCost",
+        "supplier",
+        "updatedAt"
+      ]
+    },
+    "CustomerEntry": {
+      "title": "CustomerEntry",
+      "description": "Customer profile and relationship metrics isolated to one shop.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 20
+        },
+        "email": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 160
+        },
+        "city": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "segment": {
+          "type": "string",
+          "enum": ["Regular", "VIP", "Wholesale", "New"],
+          "minLength": 3,
+          "maxLength": 20
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 240
+        },
+        "totalOrders": {
+          "type": "integer"
+        },
+        "totalSpent": {
+          "type": "number"
+        },
+        "lastPurchaseDate": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 10
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "name",
+        "phone",
+        "city",
+        "segment",
+        "totalOrders",
+        "totalSpent",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ShopBackup": {
+      "title": "ShopBackup",
+      "description": "Backup audit record and SHA-256 verification metadata for a shop snapshot.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "salesCount": {
+          "type": "integer"
+        },
+        "expensesCount": {
+          "type": "integer"
+        },
+        "inventoryCount": {
+          "type": "integer"
+        },
+        "customersCount": {
+          "type": "integer"
+        },
+        "checksum": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128
+        },
+        "snapshotSizeKb": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "label",
+        "salesCount",
+        "expensesCount",
+        "inventoryCount",
+        "checksum",
+        "snapshotSizeKb",
+        "createdAt"
+      ]
+    },
+    "EmployeeEntry": {
+      "title": "EmployeeEntry",
+      "description": "Team member / employee profile isolated to one business workspace.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "role": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "department": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 80
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 20
+        },
+        "email": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 160
+        },
+        "monthlySalary": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Active", "On Leave", "Inactive"],
+          "minLength": 6,
+          "maxLength": 16
+        },
+        "joinedDate": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 10
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "name",
+        "role",
+        "monthlySalary",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "TaskEntry": {
+      "title": "TaskEntry",
+      "description": "Operational task with status tracking (Pending, In Progress, Completed) and employee assignment isolated to one business workspace.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 400
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Pending", "In Progress", "Completed"],
+          "minLength": 7,
+          "maxLength": 20
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["Low", "Medium", "High"],
+          "minLength": 3,
+          "maxLength": 10
+        },
+        "assigneeId": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]*$"
+        },
+        "assigneeName": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 100
+        },
+        "dueDate": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 10
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "title",
+        "status",
+        "priority",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserSubscription": {
+      "title": "UserSubscription",
+      "description": "SaaS subscription tier, verified Stripe checkout reference, and monthly AI usage counter scoped to one authenticated owner.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "planId": {
+          "type": "string",
+          "enum": ["free", "starter", "business", "premium"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "canceled", "past_due"]
+        },
+        "billingInterval": {
+          "type": "string",
+          "enum": ["monthly"]
+        },
+        "currency": {
+          "type": "string",
+          "enum": ["INR", "USD"]
+        },
+        "stripeSessionId": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 160
+        },
+        "stripeCustomerId": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 160
+        },
+        "stripeSubscriptionId": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 160
+        },
+        "entitlementSignature": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 128
+        },
+        "aiMonthKey": {
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 7,
+          "pattern": "^\\d{4}-\\d{2}$"
+        },
+        "aiQueriesUsed": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "planId",
+        "status",
+        "billingInterval",
+        "currency",
+        "aiMonthKey",
+        "aiQueriesUsed",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/subscription/{subId}": {
+      "schema": { "$ref": "#/entities/UserSubscription" },
+      "description": "Private SaaS subscription plan and monthly AI usage counter for an authenticated account owner."
+    },
+    "/shops/{shopId}": {
+      "schema": { "$ref": "#/entities/ShopProfile" },
+      "description": "Business workspace profile document owned by an authenticated user (supports multiple businesses per ownerId)."
+    },
+    "/shops/{shopId}/config/{configId}": {
+      "schema": { "$ref": "#/entities/BusinessConfig" },
+      "description": "Separate business setup configuration (category, size, goals, recommended and enabled modules) per business."
+    },
+    "/shops/{shopId}/sales/{saleId}": {
+      "schema": { "$ref": "#/entities/SaleEntry" },
+      "description": "Private sales ledger transactions isolated to the shop."
+    },
+    "/shops/{shopId}/expenses/{expenseId}": {
+      "schema": { "$ref": "#/entities/ExpenseEntry" },
+      "description": "Private operating expense entries isolated to the shop."
+    },
+    "/shops/{shopId}/inventory/{itemId}": {
+      "schema": { "$ref": "#/entities/InventorySku" },
+      "description": "Private product inventory SKUs and stock alerts isolated to the shop."
+    },
+    "/shops/{shopId}/customers/{customerId}": {
+      "schema": { "$ref": "#/entities/CustomerEntry" },
+      "description": "Private customer CRM records and analytics isolated to the shop."
+    },
+    "/shops/{shopId}/employees/{employeeId}": {
+      "schema": { "$ref": "#/entities/EmployeeEntry" },
+      "description": "Private employee / staff directory records isolated to the business."
+    },
+    "/shops/{shopId}/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/TaskEntry" },
+      "description": "Private operational tasks with Pending, In Progress, and Completed status tracking isolated to the business."
+    },
+    "/shops/{shopId}/backups/{backupId}": {
+      "schema": { "$ref": "#/entities/ShopBackup" },
+      "description": "Private backup verification logs for the shop."
+    }
+  }
+}
